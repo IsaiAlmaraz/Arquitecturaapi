@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 class ApiController extends Controller
 {
     public function obtenerGeneros(){
-        $curl = curl_init();
 
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_URL => "https://api.deezer.com/genre",
             CURLOPT_RETURNTRANSFER => true,
@@ -35,7 +35,15 @@ class ApiController extends Controller
             $objeto = json_decode($response);
             foreach ($objeto->data as $genero) {
                 echo json_encode($genero);
-                echo $genero->name;
+                $verificar = Genero::where('name',$genero->name)->first();
+                if(!$verificar)
+                    $nuevoGenero = new Genero();
+
+                $nuevoGenero->name = $genero->name;
+                $nuevoGenero->save();
+
+                //echo $genero->name;
+
                 if(isset($genero->picture))
                     echo "<img src='$genero->picture' alt=''>";
                 if(isset($genero->picture_small))
